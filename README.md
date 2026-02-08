@@ -14,11 +14,11 @@ Minecraft minimap using core shaders. Works in 1.21.11 with only a resource pack
   - this readme is several times longer than the actual code
 
 # 💾 use it
-1. in your resource pack, add `rendertype_text.vsh` to `assets/minecraft/shader/core`
+1. in your resource pack, add `rendertype_text.vsh` to `assets/minecraft/shaders/core`
    - if you already have this shader, copy all `const` declarations, the `#moj_import <minecraft:globals.glsl>`, and the part that screams at you to copy it
-2. add `rendertype_text.fsh`
+2. add `rendertype_text.fsh` alongside it
+   - it's one line which just makes regions outside the map texture transparent
    - if you already have this shader, add this to the end of the main function: `fragColor.a = (1 - abs(sign(texCoord0.x - clamp(texCoord0.x, 0, 1)))) * (1 - abs(sign(texCoord0.y - clamp(texCoord0.y, 0, 1))));`
-   - this just makes regions outside your texture transparent
 3. add your minimap texture anywhere in the textures folder
    - it can be any size EXCEPT 256x256 (this conflicts with the game's font atlases)
 4. edit the constants in `rendertype_text.vsh` to match your minimap's size and settings
