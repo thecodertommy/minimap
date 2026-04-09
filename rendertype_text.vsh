@@ -3,6 +3,7 @@
 #moj_import <minecraft:fog.glsl>
 #moj_import <minecraft:dynamictransforms.glsl>
 #moj_import <minecraft:projection.glsl>
+#moj_import <minecraft:sample_lightmap.glsl>
 #moj_import <minecraft:globals.glsl> // Used to get the player's position.
 
 in vec3 Position;
@@ -10,6 +11,7 @@ in vec4 Color;
 in vec2 UV0;
 in ivec2 UV2;
 
+uniform sampler2D Sampler0;
 uniform sampler2D Sampler2;
 
 out float sphericalVertexDistance;
@@ -17,7 +19,7 @@ out float cylindricalVertexDistance;
 out vec4 vertexColor;
 out vec2 texCoord0;
 
-// Do not modify these.
+// Do not modify this line.
 const vec2 TOP = vec2(0); const vec2 RIGHT = vec2(-1, 0); const vec2 LEFT = vec2(0); const vec2 BOTTOM = vec2(0, -1); const vec2 MINIMAP_UV_OFFSETS[4] = vec2[](vec2(-0.5), vec2(-0.5, 0.5), vec2(0.5), vec2(0.5, -0.5)); const vec2 MINIMAP_POSITIONS[4] = vec2[](vec2(0), vec2(0, 1), vec2(1), vec2(1, 0));
 
 // The size of your minimap texture file, in pixels.
@@ -31,7 +33,7 @@ const vec2 MINIMAP_PADDING = vec2(20., 20.);
 const vec2 MINIMAP_ALIGN = TOP + LEFT;
 
 // The center block coordinates of your minimap.
-const ivec2 MINIMAP_CENTER = ivec2(0);
+const ivec2 MINIMAP_CENTER = ivec2(0, 0);
 // The region, in blocks, that the minimap should show.
 const float MINIMAP_SIZE_IN_BLOCKS = 64;
 // How many blocks each pixel on the texture represents.
@@ -44,17 +46,17 @@ void main() {
 
     sphericalVertexDistance = fog_spherical_distance(Position);
     cylindricalVertexDistance = fog_cylindrical_distance(Position);
-    vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0);
+    vertexColor = Color * sample_lightmap(Sampler2, UV2);
     texCoord0 = UV0;
 
     // IF YOU ARE ADDING THIS TO AN EXISTING TEXT SHADER, START COPYING BELOW
     // PUT IT AT THE END OF YOUR MAIN FUNCTION
 
-    if (textureSize(Sampler0, 0).rg == ivec2()) {
+    if (textureSize(Sampler0, 0).rg == MINIMAP_TEX_SIZE) {
         // GUI pixel-space calculations
         vec2 position = MINIMAP_SIZE * (MINIMAP_ALIGN + MINIMAP_POSITIONS[gl_VertexID & 3]) + (MINIMAP_PADDING * sign(MINIMAP_ALIGN + 0.5));
         // to screen-space and align
-        gl_Position = ProjMat * ModelViewMat * vec4(position, 0., 1.) + vec4(vec2(-2, 2) * MINIMAP_ALIGN, 0., 0.);
+        gl_Position = ProjMat * ModelViewMat * vec4(position, 0., 1.) + vec4(vec2(-2., 2.) * MINIMAP_ALIGN, 0., 0.);
         texCoord0 = (
                 0.5 * MINIMAP_TEX_SIZE // center it
                 + MINIMAP_BLOCKS_PER_PIXEL * (

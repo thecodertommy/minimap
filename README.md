@@ -1,29 +1,31 @@
 # 🗺️ minimap
-Minecraft minimap using core shaders. Works in 1.21.11 with only a resource pack!
+Display a static texture as a minimap that updates automatically on the Minecraft client.
+Works in 26.1 with only a resource pack!
 
 # 🚀 features
 - minimal disruption to vanilla and crazy compatibility
   - no forbidden text colors
-  - maps work fine
+  - arbitrary map texture sizes
+  - vanilla maps aren't affected
   - works with sodium and iris
   - scales cleanly with the user's GUI
 - easy to use
   - two files plus your own texture(s)
   - customizable constants
   - minimal server-side code; can be enabled with one command block
-  - this readme is several times longer than the actual code
+  - this readme is much longer than the actual code
 
 # 💾 use it
 1. in your resource pack, add `rendertype_text.vsh` to `assets/minecraft/shaders/core`
    - if you already have this shader, copy all `const` declarations, the `#moj_import <minecraft:globals.glsl>`, and the part that screams at you to copy it
-2. add `rendertype_text.fsh` alongside it
-   - it's one line which just makes regions outside the map texture transparent
-   - if you already have this shader, add this to the end of the main function: `fragColor.a = (1 - abs(sign(texCoord0.x - clamp(texCoord0.x, 0, 1)))) * (1 - abs(sign(texCoord0.y - clamp(texCoord0.y, 0, 1))));`
+2. add `rendertype_text.fsh`
+   - if you already have this shader, copy the one labeled line in the file
+   - it just makes regions outside your texture transparent
 3. add your minimap texture anywhere in the textures folder
-   - it can be any size EXCEPT 256x256 (this conflicts with the game's font atlases)
+   - it can be any size EXCEPT 256x256 (conflicts with the game's font atlases) or 64x64 (conflicts with normal player skins)
 4. edit the constants in `rendertype_text.vsh` to match your minimap's size and settings
 5. display the texture quite literally anywhere on the user's GUI
-   - with JSON component: `{player:{texture:"minimaps/my_minimap"},shadow_color:0}`
+   - with JSON component: `{player:{texture:"minimap/my_minimap"},shadow_color:0}`
    - with kyori: `Component.object(ObjectContents.playerHead().texture(Key.key("minimap/my_minimap")).build())`
    - you can use a boss bar, action bar, scoreboard, or even tab (for a toggleable view)
 

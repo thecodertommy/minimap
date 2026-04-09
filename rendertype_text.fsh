@@ -19,5 +19,7 @@ void main() {
     }
     fragColor = apply_fog(color, sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart, FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
 
+    // This makes the minimap transparent outside of the texture.
+    // If adding to an existing shader, copy this line.
     fragColor.a = (1 - abs(sign(texCoord0.x - clamp(texCoord0.x, 0, 1)))) * (1 - abs(sign(texCoord0.y - clamp(texCoord0.y, 0, 1))));
 }
